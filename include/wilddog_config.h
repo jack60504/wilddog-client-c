@@ -32,7 +32,7 @@ extern "C"
 * define the maximum request queue number, means how many packets can be send/observed .
 */
 #ifndef WILDDOG_REQ_QUEUE_NUM
-#define WILDDOG_REQ_QUEUE_NUM 32
+#define WILDDOG_REQ_QUEUE_NUM  256
 #endif
 /*
 * define the maximum transmit time, in ms

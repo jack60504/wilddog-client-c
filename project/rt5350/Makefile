@@ -59,7 +59,7 @@ example:
 	then \
 		make wdlib; \
 	fi
-	@make -C $(TOPDIR)/examples/linux demoall||exit 1;
+	@make -C $(TOPDIR)/examples/$(PORT_TYPE) demoall||exit 1;
 	
 
 .PHONY: clean
