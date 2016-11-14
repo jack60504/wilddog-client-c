@@ -228,7 +228,7 @@ typedef struct {
  * @return A pointer to the new PDU object or @c NULL on error.
  */
 coap_pdu_t *
-coap_pdu_init(unsigned char type, unsigned char code, 
+_coap_pdu_init(unsigned char type, unsigned char code, 
           unsigned short id, size_t size);
 
 /** 
@@ -237,7 +237,7 @@ coap_pdu_init(unsigned char type, unsigned char code,
  * other field is set to @c 0. Note that @p pdu must be a valid
  * pointer to a coap_pdu_t object created e.g. by coap_pdu_init().
  */
-int coap_pdu_clear(coap_pdu_t *pdu, size_t size);
+int _coap_pdu_clear(coap_pdu_t *pdu, size_t size);
 
 /**
  * Creates a new CoAP PDU. The object is created on the heap and must be released
@@ -246,9 +246,9 @@ int coap_pdu_clear(coap_pdu_t *pdu, size_t size);
  * @deprecated This function allocates the maximum storage for each
  * PDU. Use coap_pdu_init() instead. 
  */
-coap_pdu_t *coap_new_pdu(void);
+coap_pdu_t *_coap_new_pdu(void);
 
-void coap_delete_pdu(coap_pdu_t *);
+void _coap_delete_pdu(coap_pdu_t *);
 
 /**
  * Parses @p data into the CoAP PDU structure given in @p result. This
@@ -262,7 +262,7 @@ void coap_delete_pdu(coap_pdu_t *);
  *               entire CoAP PDU.
  * @return A value greater than zero on success or @c 0 on error.
  */
-int coap_pdu_parse(unsigned char *data, size_t length, coap_pdu_t *result);
+int _coap_pdu_parse(unsigned char *data, size_t length, coap_pdu_t *result);
 
 /**
  * Adds token of length @p len to @p pdu. Adding the token destroys
@@ -276,7 +276,7 @@ int coap_pdu_parse(unsigned char *data, size_t length, coap_pdu_t *result);
  * @param data The token to add.
  * @return A value greater than zero on success, or @c 0 on error.
  */
-int coap_add_token(coap_pdu_t *pdu, size_t len, const unsigned char *data);
+int _coap_add_token(coap_pdu_t *pdu, size_t len, const unsigned char *data);
 
 /**
  * Adds option of given type to pdu that is passed as first
@@ -286,7 +286,7 @@ int coap_add_token(coap_pdu_t *pdu, size_t len, const unsigned char *data);
  * the token must be added before coap_add_option() is called.
  * This function returns the number of bytes written or @c 0 on error.
  */
-size_t coap_add_option(coap_pdu_t *pdu, unsigned short type, 
+size_t _coap_add_option(coap_pdu_t *pdu, unsigned short type, 
                unsigned int len, const unsigned char *data);
 
 /**
@@ -296,7 +296,7 @@ size_t coap_add_option(coap_pdu_t *pdu, unsigned short type,
  * This function returns a memory address to which the option data has to be
  * written before the PDU can be sent, or @c NULL on error.
  */
-unsigned char *coap_add_option_later(coap_pdu_t *pdu, unsigned short type,
+unsigned char *_coap_add_option_later(coap_pdu_t *pdu, unsigned short type,
               unsigned int len);
 
 /**
@@ -304,19 +304,19 @@ unsigned char *coap_add_option_later(coap_pdu_t *pdu, unsigned short type,
  * that the PDU's data is destroyed by coap_add_option(). coap_add_data()
  * must be called only once per PDU, otherwise the result is undefined.
  */
-int coap_add_data(coap_pdu_t *pdu, unsigned int len, const unsigned char *data);
+int _coap_add_data(coap_pdu_t *pdu, unsigned int len, const unsigned char *data);
 
 /**
  * Retrieves the length and data pointer of specified PDU. Returns 0 on error
  * or 1 if *len and *data have correct values. Note that these values are
  * destroyed with the pdu.
  */
-int coap_get_data(coap_pdu_t *pdu, size_t *len, unsigned char **data);
+int _coap_get_data(coap_pdu_t *pdu, size_t *len, unsigned char **data);
 
-int coap_show_pdu(const coap_pdu_t *pdu);
+int _coap_show_pdu(const coap_pdu_t *pdu);
 
 unsigned int
-print_readable( const unsigned char *data, unsigned int len,
+_print_readable( const unsigned char *data, unsigned int len,
         unsigned char *result, unsigned int buflen, int encode_always );
 
 #endif /* _PDU_H_ */

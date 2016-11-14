@@ -46,7 +46,7 @@ typedef struct {
  *               filled with actual values iff coap_opt_parse() > 0.
  * @return The number of bytes parsed or @c 0 on error.
  */
-size_t coap_opt_parse(const coap_opt_t *opt, size_t length, 
+size_t _coap_opt_parse(const coap_opt_t *opt, size_t length, 
               coap_option_t *result);
 
 /**
@@ -59,10 +59,10 @@ size_t coap_opt_parse(const coap_opt_t *opt, size_t length,
  *         this function returns @c 0 as options need at least
  *         one byte storage space.
  */
-size_t coap_opt_size(const coap_opt_t *opt);
+size_t _coap_opt_size(const coap_opt_t *opt);
 
 /** @deprecated { Use coap_opt_size() instead. } */
-#define COAP_OPT_SIZE(opt) coap_opt_size(opt)
+#define COAP_OPT_SIZE(opt) _coap_opt_size(opt)
 
 /**
  * Calculates the beginning of the PDU's option section.
@@ -70,7 +70,7 @@ size_t coap_opt_size(const coap_opt_t *opt);
  * @param pdu The PDU containing the options.
  * @return A pointer to the first option if available, or @c NULL otherwise.
  */
-coap_opt_t *options_start(coap_pdu_t *pdu);
+coap_opt_t *_options_start(coap_pdu_t *pdu);
 
 /**
  * Interprets @p opt as pointer to a CoAP option and advances to
@@ -192,7 +192,7 @@ typedef struct {
  * 
  * @return The iterator object @p oi on success, @c NULL otherwise.
  */
-coap_opt_iterator_t *coap_option_iterator_init(coap_pdu_t *pdu,
+coap_opt_iterator_t *_coap_option_iterator_init(coap_pdu_t *pdu,
      coap_opt_iterator_t *oi, const coap_opt_filter_t filter);
 
 /** 
@@ -214,7 +214,7 @@ coap_opt_iterator_t *coap_option_iterator_init(coap_pdu_t *pdu,
  * 
  * @return The next option or @c NULL if no more options exist.
  */
-coap_opt_t *coap_option_next(coap_opt_iterator_t *oi);
+coap_opt_t *_coap_option_next(coap_opt_iterator_t *oi);
 
 /** 
  * Retrieves the first option of type @p type from @p pdu. @p oi must
@@ -248,7 +248,7 @@ coap_opt_t *coap_check_option(coap_pdu_t *pdu,
  * @param length The actual length value to encode.
  * @return The number of bytes used or @c 0 on error.
  */
-size_t coap_opt_setheader(coap_opt_t *opt, size_t maxlen, 
+size_t _coap_opt_setheader(coap_opt_t *opt, size_t maxlen, 
               unsigned short delta, size_t length);
 
 /**
@@ -265,7 +265,7 @@ size_t coap_opt_setheader(coap_opt_t *opt, size_t maxlen,
  * @return The number of bytes that have been written to @p opt or
  *         @c 0 on error. The return value will always be less than @p n.
  */
-size_t coap_opt_encode(coap_opt_t *opt, size_t n, unsigned short delta,
+size_t _coap_opt_encode(coap_opt_t *opt, size_t n, unsigned short delta,
                const unsigned char *val, size_t length);
 
 /**
@@ -277,14 +277,14 @@ size_t coap_opt_encode(coap_opt_t *opt, size_t n, unsigned short delta,
  * @param opt The option to examine
  * @return The number of bytes read or @c 0 on error.
  */
-unsigned short coap_opt_delta(const coap_opt_t *opt);
+unsigned short _coap_opt_delta(const coap_opt_t *opt);
 
 /** @deprecated { Use coap_opt_delta() instead. } */
-#define COAP_OPT_DELTA(opt) coap_opt_delta(opt)
+#define COAP_OPT_DELTA(opt) _coap_opt_delta(opt)
 
 /** @deprecated { Use coap_opt_encode() instead. } */
 #define COAP_OPT_SETDELTA(opt,val)          \
-  coap_opt_encode((opt), COAP_MAX_PDU_SIZE, (val), NULL, 0)
+  _coap_opt_encode((opt), COAP_MAX_PDU_SIZE, (val), NULL, 0)
 
 /**
  * Returns the length of the given option. @p opt must point to an
@@ -299,10 +299,10 @@ unsigned short coap_opt_delta(const coap_opt_t *opt);
  * @param opt  The option whose length should be returned.
  * @return The option's length or @c 0 when undefined.
  */
-unsigned short coap_opt_length(const coap_opt_t *opt);
+unsigned short _coap_opt_length(const coap_opt_t *opt);
 
 /** @deprecated { Use coap_opt_length() instead. } */
-#define COAP_OPT_LENGTH(opt) coap_opt_length(opt)
+#define COAP_OPT_LENGTH(opt) _coap_opt_length(opt)
 
 /**
  * Returns a pointer to the value of the given option. @p opt must
@@ -312,10 +312,10 @@ unsigned short coap_opt_length(const coap_opt_t *opt);
  * @param opt  The option whose value should be returned.
  * @return A pointer to the option value or @c NULL on error.
  */
-unsigned char *coap_opt_value(coap_opt_t *opt);
+unsigned char *_coap_opt_value(coap_opt_t *opt);
 
 /** @deprecated { Use coap_opt_value() instead. } */
-#define COAP_OPT_VALUE(opt) coap_opt_value((coap_opt_t *)opt)
+#define COAP_OPT_VALUE(opt) _coap_opt_value((coap_opt_t *)opt)
 
 /** @} */
 

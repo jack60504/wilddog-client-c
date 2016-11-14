@@ -20,7 +20,8 @@
 #include "wilddog_endian.h"
 #include "wilddog_common.h"
 
-int WD_SYSTEM coap_pdu_clear(coap_pdu_t *pdu, size_t size) 
+#pragma GCC visibility push(hidden)
+int WD_SYSTEM _coap_pdu_clear(coap_pdu_t *pdu, size_t size) 
 {
   wilddog_assert(pdu, 0);
 
@@ -34,7 +35,7 @@ int WD_SYSTEM coap_pdu_clear(coap_pdu_t *pdu, size_t size)
   return 0;
 }
 
-coap_pdu_t * WD_SYSTEM coap_pdu_init
+coap_pdu_t * WD_SYSTEM _coap_pdu_init
     (
     unsigned char type, 
     unsigned char code, 
@@ -53,7 +54,7 @@ coap_pdu_t * WD_SYSTEM coap_pdu_init
 
   if (pdu) 
   {
-    coap_pdu_clear(pdu, size);
+    _coap_pdu_clear(pdu, size);
     pdu->hdr->id = id;
     pdu->hdr->type = type;
     pdu->hdr->code = code;
@@ -61,20 +62,20 @@ coap_pdu_t * WD_SYSTEM coap_pdu_init
   return pdu;
 }
 
-coap_pdu_t *WD_SYSTEM coap_new_pdu() 
+coap_pdu_t *WD_SYSTEM _coap_new_pdu() 
 {
   coap_pdu_t *pdu;
-  pdu = coap_pdu_init(0, 0, \
+  pdu = _coap_pdu_init(0, 0, \
                       wilddog_ntohs(COAP_INVALID_TID), WILDDOG_PROTO_MAXSIZE);
   return pdu;
 }
 
-void WD_SYSTEM coap_delete_pdu(coap_pdu_t *pdu) 
+void WD_SYSTEM _coap_delete_pdu(coap_pdu_t *pdu) 
 {
   wfree( pdu );
 }
 
-int WD_SYSTEM coap_add_token
+int WD_SYSTEM _coap_add_token
     (
     coap_pdu_t *pdu, 
     size_t len, 
@@ -97,7 +98,7 @@ int WD_SYSTEM coap_add_token
 }
 
 /** @FIXME de-duplicate code with coap_add_option_later */
-size_t WD_SYSTEM coap_add_option
+size_t WD_SYSTEM _coap_add_option
     (
     coap_pdu_t *pdu, 
     unsigned short type, 
@@ -121,7 +122,7 @@ size_t WD_SYSTEM coap_add_option
   opt = (unsigned char *)pdu->hdr + pdu->length;
 
   /* encode option and check length */
-  optsize = coap_opt_encode(opt, pdu->max_size - pdu->length, 
+  optsize = _coap_opt_encode(opt, pdu->max_size - pdu->length, 
                 type - pdu->max_delta, data, len);
 
   if (!optsize) 
@@ -141,7 +142,7 @@ size_t WD_SYSTEM coap_add_option
 }
 
 /** @FIXME de-duplicate code with coap_add_option */
-unsigned char* WD_SYSTEM coap_add_option_later
+unsigned char* WD_SYSTEM _coap_add_option_later
     (
     coap_pdu_t *pdu, 
     unsigned short type, 
@@ -164,7 +165,7 @@ unsigned char* WD_SYSTEM coap_add_option_later
   opt = (unsigned char *)pdu->hdr + pdu->length;
 
   /* encode option and check length */
-  optsize = coap_opt_encode(opt, pdu->max_size - pdu->length,
+  optsize = _coap_opt_encode(opt, pdu->max_size - pdu->length,
                 type - pdu->max_delta, NULL, len);
 
   if (!optsize) 
@@ -182,7 +183,7 @@ unsigned char* WD_SYSTEM coap_add_option_later
   return ((unsigned char*)opt) + optsize - len;
 }
 
-int WD_SYSTEM coap_add_data
+int WD_SYSTEM _coap_add_data
     (
     coap_pdu_t *pdu, 
     unsigned int len, 
@@ -212,7 +213,7 @@ int WD_SYSTEM coap_add_data
   return 1;
 }
 
-int WD_SYSTEM coap_get_data
+int WD_SYSTEM _coap_get_data
     (
     coap_pdu_t *pdu, 
     size_t *len, 
@@ -240,7 +241,7 @@ int WD_SYSTEM coap_get_data
  * returns the number of bytes opt has been advanced or @c 0
  * on error.
  */
-STATIC size_t WD_SYSTEM next_option_safe(coap_opt_t **optp, size_t*length) 
+STATIC size_t WD_SYSTEM _next_option_safe(coap_opt_t **optp, size_t*length) 
 {
   coap_option_t option;
   size_t optsize;
@@ -249,7 +250,7 @@ STATIC size_t WD_SYSTEM next_option_safe(coap_opt_t **optp, size_t*length)
   wilddog_assert(*optp, 0); 
   wilddog_assert(length, 0);
 
-  optsize = coap_opt_parse(*optp, *length, &option);
+  optsize = _coap_opt_parse(*optp, *length, &option);
   if (optsize) 
   {
     wilddog_assert(optsize <= *length, 0);
@@ -261,7 +262,7 @@ STATIC size_t WD_SYSTEM next_option_safe(coap_opt_t **optp, size_t*length)
   return optsize;
 }
 
-int WD_SYSTEM coap_pdu_parse
+int WD_SYSTEM _coap_pdu_parse
     (
     unsigned char *data, 
     size_t length, 
@@ -326,7 +327,7 @@ int WD_SYSTEM coap_pdu_parse
   while (length && *opt != COAP_PAYLOAD_START) 
   {
 
-    if (!next_option_safe(&opt, (size_t *)&length)) 
+    if (!_next_option_safe(&opt, (size_t *)&length)) 
     {
       wilddog_debug_level(WD_DEBUG_ERROR, "pdu:: coap_pdu_parse: drop\n");
       goto discard;
@@ -363,7 +364,7 @@ STATIC BOOL INLINE WD_SYSTEM _isprint(char data)
     return (data >=0x20 && data <=0x7e) ;
 }
 
-unsigned int WD_SYSTEM print_readable
+unsigned int WD_SYSTEM _print_readable
     ( 
     const unsigned char *data,
     unsigned int len,
@@ -412,7 +413,7 @@ unsigned int WD_SYSTEM print_readable
 }
 #define COAP_DEBUG_FD stdout
 
-int WD_SYSTEM coap_show_pdu(const coap_pdu_t *pdu) 
+int WD_SYSTEM _coap_show_pdu(const coap_pdu_t *pdu) 
 {
   unsigned char buf[COAP_MAX_PDU_SIZE];/* need some space for output creation */
   int encode = 0, have_options = 0;
@@ -425,9 +426,9 @@ int WD_SYSTEM coap_show_pdu(const coap_pdu_t *pdu)
       pdu->hdr->code, wilddog_ntohs(pdu->hdr->id));
 
   /* show options, if any */
-  coap_option_iterator_init((coap_pdu_t *)pdu, &opt_iter, COAP_OPT_ALL);
+  _coap_option_iterator_init((coap_pdu_t *)pdu, &opt_iter, COAP_OPT_ALL);
 
-  while ((option = coap_option_next(&opt_iter))) 
+  while ((option = _coap_option_next(&opt_iter))) 
   {
     if (!have_options) 
     {
@@ -454,7 +455,7 @@ int WD_SYSTEM coap_show_pdu(const coap_pdu_t *pdu)
       encode = 1;
     }
 
-    if (print_readable(COAP_OPT_VALUE(option),
+    if (_print_readable(COAP_OPT_VALUE(option),
                COAP_OPT_LENGTH(option),
                buf, sizeof(buf), encode ))
       fprintf(COAP_DEBUG_FD, " %d:'%s'", opt_iter.type, buf);
@@ -466,7 +467,7 @@ int WD_SYSTEM coap_show_pdu(const coap_pdu_t *pdu)
   if (pdu->data) 
   {
     wilddog_assert(pdu->data < (unsigned char *)pdu->hdr + pdu->length, 0);
-    print_readable(pdu->data,
+    _print_readable(pdu->data,
            (unsigned char *)pdu->hdr + pdu->length - pdu->data,
            buf, sizeof(buf), 0 );
     fprintf(COAP_DEBUG_FD, " d:%s", buf);
@@ -475,4 +476,4 @@ int WD_SYSTEM coap_show_pdu(const coap_pdu_t *pdu)
   fflush(COAP_DEBUG_FD);
   return 0;
 }
-
+#pragma GCC visibility pop

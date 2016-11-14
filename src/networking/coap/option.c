@@ -19,7 +19,8 @@
 #include "wilddog.h"
 #include "wilddog_debug.h"
 
-coap_opt_t * WD_SYSTEM options_start(coap_pdu_t *pdu) 
+#pragma GCC visibility push(hidden)
+coap_opt_t * WD_SYSTEM _options_start(coap_pdu_t *pdu) 
 {
 
   if (pdu && pdu->hdr && 
@@ -33,7 +34,7 @@ coap_opt_t * WD_SYSTEM options_start(coap_pdu_t *pdu)
     return NULL;
 }
 
-size_t WD_SYSTEM coap_opt_parse
+size_t WD_SYSTEM _coap_opt_parse
     (
     const coap_opt_t *opt, 
     size_t length, 
@@ -125,7 +126,7 @@ size_t WD_SYSTEM coap_opt_parse
   return (opt + result->length) - opt_start;
 }
 
-coap_opt_iterator_t *WD_SYSTEM coap_option_iterator_init
+coap_opt_iterator_t *WD_SYSTEM _coap_option_iterator_init
     (
     coap_pdu_t *pdu, 
     coap_opt_iterator_t *oi,
@@ -157,7 +158,7 @@ coap_opt_iterator_t *WD_SYSTEM coap_option_iterator_init
   return oi;
 }
 
-STATIC INLINE int WD_SYSTEM opt_finished(coap_opt_iterator_t *oi) 
+STATIC INLINE int WD_SYSTEM _opt_finished(coap_opt_iterator_t *oi) 
 {
   wilddog_assert(oi, 0);
 
@@ -169,7 +170,7 @@ STATIC INLINE int WD_SYSTEM opt_finished(coap_opt_iterator_t *oi)
   return oi->bad;
 }
 
-coap_opt_t *WD_SYSTEM coap_option_next(coap_opt_iterator_t *oi) 
+coap_opt_t *WD_SYSTEM _coap_option_next(coap_opt_iterator_t *oi) 
 {
   coap_option_t option;
   coap_opt_t *current_opt = NULL;
@@ -178,7 +179,7 @@ coap_opt_t *WD_SYSTEM coap_option_next(coap_opt_iterator_t *oi)
 
   wilddog_assert(oi, NULL);
 
-  if (opt_finished(oi))
+  if (_opt_finished(oi))
     return NULL;
 
   while (1) 
@@ -190,7 +191,7 @@ coap_opt_t *WD_SYSTEM coap_option_next(coap_opt_iterator_t *oi)
     
     /* Advance internal pointer to next option, skipping any option that
      * is not included in oi->filter. */
-    optsize = coap_opt_parse(oi->next_option, oi->length, &option);
+    optsize = _coap_opt_parse(oi->next_option, oi->length, &option);
     if (optsize) 
     {
       wilddog_assert(optsize <= oi->length, NULL);
@@ -237,12 +238,12 @@ coap_opt_t *WD_SYSTEM coap_check_option
   coap_option_filter_clear(f);
   coap_option_setb(f, type);
 
-  coap_option_iterator_init(pdu, oi, f);
+  _coap_option_iterator_init(pdu, oi, f);
 
-  return coap_option_next(oi);
+  return _coap_option_next(oi);
 }
 
-unsigned short WD_SYSTEM coap_opt_delta(const coap_opt_t *opt) 
+unsigned short WD_SYSTEM _coap_opt_delta(const coap_opt_t *opt) 
 {
   unsigned short n;
 
@@ -273,7 +274,7 @@ unsigned short WD_SYSTEM coap_opt_delta(const coap_opt_t *opt)
   return n;
 }
 
-unsigned short WD_SYSTEM coap_opt_length(const coap_opt_t *opt) 
+unsigned short WD_SYSTEM _coap_opt_length(const coap_opt_t *opt) 
 {
   unsigned short length;
 
@@ -310,7 +311,7 @@ unsigned short WD_SYSTEM coap_opt_length(const coap_opt_t *opt)
   return length;
 }
 
-unsigned char *WD_SYSTEM coap_opt_value(coap_opt_t *opt) 
+unsigned char *WD_SYSTEM _coap_opt_value(coap_opt_t *opt) 
 {
   size_t ofs = 1;
 
@@ -347,15 +348,15 @@ unsigned char *WD_SYSTEM coap_opt_value(coap_opt_t *opt)
   return (unsigned char *)opt + ofs;
 }
 
-size_t WD_SYSTEM coap_opt_size(const coap_opt_t *opt) 
+size_t WD_SYSTEM _coap_opt_size(const coap_opt_t *opt) 
 {
   coap_option_t option;
 
   /* we must assume that opt is encoded correctly */
-  return coap_opt_parse(opt, (size_t)-1, &option);
+  return _coap_opt_parse(opt, (size_t)-1, &option);
 }
 
-size_t WD_SYSTEM coap_opt_setheader
+size_t WD_SYSTEM _coap_opt_setheader
     (
     coap_opt_t *opt, 
     size_t maxlen, 
@@ -433,7 +434,7 @@ size_t WD_SYSTEM coap_opt_setheader
   return skip + 1;
 }
 
-size_t WD_SYSTEM coap_opt_encode
+size_t WD_SYSTEM _coap_opt_encode
     (
     coap_opt_t *opt, 
     size_t maxlen, 
@@ -444,7 +445,7 @@ size_t WD_SYSTEM coap_opt_encode
 {
   size_t l = 1;
 
-  l = coap_opt_setheader(opt, maxlen, delta, length);
+  l = _coap_opt_setheader(opt, maxlen, delta, length);
   wilddog_assert(l <= maxlen, 0);
   
   if (!l) 
@@ -469,4 +470,4 @@ size_t WD_SYSTEM coap_opt_encode
 
   return l + length;
 }
-
+#pragma GCC visibility pop

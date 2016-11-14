@@ -339,12 +339,12 @@ STATIC size_t WD_SYSTEM _wilddog_coap_creat
     if(_wilddog_coap_cmd2Typecode(p_arg->cmd,&type,&code) < 0)
         return 0;
     /*creat an coap package.*/
-    p_pdu = coap_pdu_init(type,code,p_arg->d_index,p_arg->d_packageLen);
+    p_pdu = _coap_pdu_init(type,code,p_arg->d_index,p_arg->d_packageLen);
 
     if(p_pdu == NULL)
         return 0;
     /* add token option.*/
-    coap_add_token(p_pdu, COAP_TOKENLEN, (u8*)&(p_arg->d_token));
+    _coap_add_token(p_pdu, COAP_TOKENLEN, (u8*)&(p_arg->d_token));
 
     wilddog_debug_level(WD_DEBUG_LOG,"coap:: tcreat coap pakge :%p :",p_pdu);
     return ( size_t )p_pdu;
@@ -359,7 +359,7 @@ STATIC Wilddog_Return_T WD_SYSTEM _wilddog_coap_destory
         return WILDDOG_ERR_INVALID;
     
     wilddog_debug_level(WD_DEBUG_LOG,"coap:: destory coap pakge :%p :",p_coap);
-    coap_delete_pdu((coap_pdu_t*)p_coap);
+    _coap_delete_pdu((coap_pdu_t*)p_coap);
 
     return WILDDOG_ERR_NOERR;
 }
@@ -382,7 +382,7 @@ STATIC Wilddog_Return_T WD_SYSTEM _wilddog_coap_addHost
         p_arg->p_options == NULL)
         return WILDDOG_ERR_NULL;
 
-    coap_add_option((coap_pdu_t*)p_arg->p_pkg, \
+    _coap_add_option((coap_pdu_t*)p_arg->p_pkg, \
                      COAP_OPTION_URI_HOST, \
                      strlen((const char*)p_arg->p_options), \
                      p_arg->p_options);
@@ -420,14 +420,14 @@ STATIC Wilddog_Return_T WD_SYSTEM _wilddog_coap_addPath
         p_subpath_end = (u8*)_wilddog_strchar((char *)p_subpath_h,'/');
         if( !p_subpath_end )
         {
-            coap_add_option((coap_pdu_t*) p_arg->p_pkg, \
+            _coap_add_option((coap_pdu_t*) p_arg->p_pkg, \
                              COAP_OPTION_URI_PATH, \
                              strlen((const char *)p_subpath_h), \
                              p_subpath_h);
             break;
         }
         else
-            coap_add_option((coap_pdu_t*) p_arg->p_pkg, \
+            _coap_add_option((coap_pdu_t*) p_arg->p_pkg, \
                             COAP_OPTION_URI_PATH, \
                             p_subpath_end - p_subpath_h, \
                             p_subpath_h);
@@ -454,7 +454,7 @@ STATIC Wilddog_Return_T WD_SYSTEM _wilddog_coap_addQuery
         p_arg->p_options == NULL)
         return WILDDOG_ERR_NULL;
     
-    coap_add_option((coap_pdu_t*)p_arg->p_pkg, \
+    _coap_add_option((coap_pdu_t*)p_arg->p_pkg, \
                     COAP_OPTION_URI_QUERY, \
                     strlen((const char *)p_arg->p_options), \
                     p_arg->p_options);
@@ -479,7 +479,7 @@ STATIC Wilddog_Return_T WD_SYSTEM _wilddog_coap_addData
         p_arg->p_pkg == NULL ||
         p_arg->p_payload == NULL)
         return WILDDOG_ERR_NULL;
-    ret = coap_add_data((coap_pdu_t*)p_arg->p_pkg,\
+    ret = _coap_add_data((coap_pdu_t*)p_arg->p_pkg,\
                         p_arg->d_payloadLen, \
                         p_arg->p_payload);
    
@@ -508,7 +508,7 @@ STATIC Wilddog_Return_T WD_SYSTEM _wilddog_coap_addObserver
         return WILDDOG_ERR_NULL;
     }
     
-    coap_add_option((coap_pdu_t*)p_arg->p_pkg,\
+    _coap_add_option((coap_pdu_t*)p_arg->p_pkg,\
                     COAP_OPTION_OBSERVE, \
                     1, \
                     p_arg->p_options);
@@ -543,7 +543,7 @@ STATIC int WD_SYSTEM _wilddog_conn_coap_auth_update
     if(p_op == NULL)
         return WILDDOG_ERR_NOERR;
     /* pointer to option value*/
-    p_opvalue = coap_opt_value(p_op);
+    p_opvalue = _coap_opt_value(p_op);
     if(p_opvalue == NULL)
         return WILDDOG_ERR_INVALID;
     
@@ -572,7 +572,7 @@ Wilddog_Return_T WD_SYSTEM _wilddog_coap_send(void *p_arg,int flag)
     
 #ifdef DEBUG_LEVEL
     if(DEBUG_LEVEL <= WD_DEBUG_LOG )
-        coap_show_pdu(p_coap);
+        _coap_show_pdu(p_coap);
 #endif
    return _wilddog_sec_send(p_coap->hdr, p_coap->length);
 }
@@ -610,17 +610,17 @@ STATIC coap_pdu_t * WD_SYSTEM _wilddog_recvCoap
 {
     coap_pdu_t* p_resp = NULL;
 
-    p_resp = coap_new_pdu();
+    p_resp = _coap_new_pdu();
     if(!p_resp)
         return NULL;
 
     /*  is coap packet */
-    if( coap_pdu_parse(p_buf,buflen, p_resp) && 
+    if( _coap_pdu_parse(p_buf,buflen, p_resp) && 
         (p_resp->hdr->version == COAP_DEFAULT_VERSION)) 
             return p_resp;
     else
     {
-        coap_delete_pdu(p_resp);
+        _coap_delete_pdu(p_resp);
         return NULL;
     }
 }
@@ -651,10 +651,10 @@ BOOL WD_SYSTEM _wilddog_recv_getOptionValue
     p_op = coap_check_option(p_recvPdu,optionCode,&d_oi);
     if(p_op)
     {
-        d_optionlen = coap_opt_length(p_op);
+        d_optionlen = _coap_opt_length(p_op);
         if(d_optionlen && d_optionlen <= d_dstSize)
         {
-            p_optionvalue = coap_opt_value(p_op);
+            p_optionvalue = _coap_opt_value(p_op);
 
 #if WILDDOG_LITTLE_ENDIAN == 1 
             _sys_coap_ntol((u8*)p_dst,p_optionvalue,d_optionlen); 
@@ -688,14 +688,14 @@ u8* WD_SYSTEM _wilddog_recv_path_alloc
   else
   		pdu_hd_option_len = pdu->length;
   /*list all option  */
-  coap_option_iterator_init((coap_pdu_t *)pdu, &opt_iter, COAP_OPT_ALL);
-  while ((option = coap_option_next(&opt_iter))) 
+  _coap_option_iterator_init((coap_pdu_t *)pdu, &opt_iter, COAP_OPT_ALL);
+  while ((option = _coap_option_next(&opt_iter))) 
   {
 
 		if ( opt_iter.type == COAP_OPTION_URI_PATH ) 
 			{
-			  u16 d_optionlen = coap_opt_length(option);
-			  u8 *p_optionvalue = coap_opt_value(option);
+			  u16 d_optionlen = _coap_opt_length(option);
+			  u8 *p_optionvalue = _coap_opt_value(option);
 			  
 			  if(p_path_buf == NULL){
 				  p_path_buf = wmalloc(pdu_hd_option_len);
@@ -785,7 +785,7 @@ Wilddog_Return_T WD_SYSTEM _wilddog_recv_dispatch
                         p_cm_recvArg->d_maxAge);
     /* get blockNum.*/
     /*get payload data */
-    coap_get_data(p_recvPdu,&playloadLen,&p_payload);
+    _coap_get_data(p_recvPdu,&playloadLen,&p_payload);
     /* clean buf .*/
     memset(p_cm_recvArg->p_recvData,0,(size_t)p_cm_recvArg->d_recvDataLen);
     
@@ -831,8 +831,8 @@ STATIC int WD_SYSTEM _wilddog_coap_ackSend
     if(recv_type != COAP_MESSAGE_CON)
         return WILDDOG_ERR_NOERR;
 
-    toSend = coap_pdu_init(ack_type, 0, id,WILDDOG_PROTO_MAXSIZE);
-    coap_add_token(toSend,tkl,p_tk);
+    toSend = _coap_pdu_init(ack_type, 0, id,WILDDOG_PROTO_MAXSIZE);
+    _coap_add_token(toSend,tkl,p_tk);
     if (toSend == NULL) 
     {
         wilddog_debug_level(WD_DEBUG_ERROR,"coap_addToken error");
@@ -840,7 +840,7 @@ STATIC int WD_SYSTEM _wilddog_coap_ackSend
     }
     returnCode = _wilddog_sec_send(toSend->hdr,toSend->length);
     
-    coap_delete_pdu(toSend);
+    _coap_delete_pdu(toSend);
     return returnCode;
 
 }
@@ -893,14 +893,14 @@ Wilddog_Return_T WD_SYSTEM _wilddog_coap_receive(void *p_arg,int flag)
 #ifdef WILDDOG_DEBUG
 #if DEBUG_LEVEL <= WD_DEBUG_LOG
     printf("recv coap package:\n");
-    coap_show_pdu(p_pdu);
+    _coap_show_pdu(p_pdu);
 #endif
 #endif
     /* dispatch .*/
     recvArg.d_recvDataLen = WILDDOG_PROTO_MAXSIZE;
     if( _wilddog_recv_dispatch(p_pdu,&recvArg) < 0)
     {
-        coap_delete_pdu(p_pdu);
+        _coap_delete_pdu(p_pdu);
         goto _COAPRECV_ERR;
             
     }
@@ -909,7 +909,7 @@ Wilddog_Return_T WD_SYSTEM _wilddog_coap_receive(void *p_arg,int flag)
     tmp_tokenLen = p_pdu->hdr->token_length;
     memcpy(&tmp_token,p_pdu->hdr->token,p_pdu->hdr->token_length);
 
-    coap_delete_pdu(p_pdu);
+    _coap_delete_pdu(p_pdu);
     /* call back.*/
     if( _wilddog_coap_findRespondNode(&recvArg) != TRUE)
         ack_type = COAP_MESSAGE_RST;
