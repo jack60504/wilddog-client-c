@@ -69,11 +69,13 @@
 #define _CM_SYS_PING_LONGTOKEN_PATH   "/.rst"
 #define _CM_SYS_RECONNECT_TIME  (2)
 
-#define _CM_SYS_STEP_SEC    ( 9 )
+//#define _CM_SYS_STEP_SEC    ( 9 ) //modified by jimmy, remove auto ping test to 0
+#define _CM_SYS_STEP_SEC    ( 0 )
 #define _CM_SYS_INTERVALINIT_SEC (20 )   
 #define _CM_SYS_KEEPOFFLINE     (3)
 #define _CM_SYS_PINGRETRACETIME_SEC	(10)
-#define _CM_SYS_OFFLINE_PINGTM_SEC (3*60)
+//#define _CM_SYS_OFFLINE_PINGTM_SEC (3*60) //modified by jimmy, change re test on/offline to 30s
+#define _CM_SYS_OFFLINE_PINGTM_SEC (30)
 #define _CM_SYS_SERVER_KEEPSESSION_SEC   (168)
 #define _CM_SYS_PING_INTERVAL_MIN_SEC	(10)
 #define _CM_SYS_PING_INTERVAL_MAX_SEC ((_CM_SYS_SERVER_KEEPSESSION_SEC) - \
@@ -674,11 +676,14 @@ STATIC Wilddog_Return_T WD_SYSTEM _wilddog_cm_recv_handle_on
     if(_CM_RECV_SERVER_ERROR(p_recv->err))
     {
         /*have beed observer,ignore it*/
-        if( _wilddog_cm_ndoe_isNotify(p_cm_n) && \
+//20161020 node must be remove since receive error.
+#if 0
+		if( _wilddog_cm_ndoe_isNotify(p_cm_n) && \
             p_recv->err != WILDDOG_HTTP_PRECONDITION_FAIL)
         {
             return WILDDOG_ERR_NOERR;
         }
+#endif		
         /* call user call back.*/
         if(p_l_cmControl->f_cn_callBackHandle)
         {
