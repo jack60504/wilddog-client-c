@@ -20,7 +20,6 @@
 #include "wilddog_endian.h"
 #include "wilddog_common.h"
 
-#pragma GCC visibility push(hidden)
 int WD_SYSTEM _coap_pdu_clear(coap_pdu_t *pdu, size_t size) 
 {
   wilddog_assert(pdu, 0);
@@ -476,4 +475,3 @@ int WD_SYSTEM _coap_show_pdu(const coap_pdu_t *pdu)
   fflush(COAP_DEBUG_FD);
   return 0;
 }
-#pragma GCC visibility pop

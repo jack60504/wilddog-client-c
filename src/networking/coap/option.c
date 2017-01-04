@@ -19,7 +19,6 @@
 #include "wilddog.h"
 #include "wilddog_debug.h"
 
-#pragma GCC visibility push(hidden)
 coap_opt_t * WD_SYSTEM _options_start(coap_pdu_t *pdu) 
 {
 
@@ -470,4 +469,3 @@ size_t WD_SYSTEM _coap_opt_encode
 
   return l + length;
 }
-#pragma GCC visibility pop
