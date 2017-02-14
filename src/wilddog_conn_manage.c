@@ -70,7 +70,7 @@
 #define _CM_SYS_RECONNECT_TIME  (2)
 
 /* #define _CM_SYS_STEP_SEC    ( 9 ) */
-#define _CM_SYS_STEP_SEC    ( 9 )
+#define _CM_SYS_STEP_SEC    ( 0 )
 #define _CM_SYS_INTERVALINIT_SEC (20 )   
 #define _CM_SYS_KEEPOFFLINE     (3)
 #define _CM_SYS_PINGRETRACETIME_SEC	(10)
@@ -1137,6 +1137,7 @@ STATIC Wilddog_Return_T WD_SYSTEM _wilddog_cm_sessionInit
     if(res < 0)
         goto _CM_AUTH_ERR;
     
+	_wilddog_cm_cmd_authe_delete(p_cm_l,0);
     /*   add list and send out.*/ 
     sendArg.cmd = WILDDOG_CONN_CMD_AUTH;
     sendArg.p_cm_l =  p_cm_l;
