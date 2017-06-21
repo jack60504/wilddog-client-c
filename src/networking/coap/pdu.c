@@ -44,9 +44,9 @@ coap_pdu_t * WD_SYSTEM _coap_pdu_init
 {
   coap_pdu_t *pdu = NULL;
 
-  wilddog_assert(size <= COAP_MAX_PDU_SIZE, NULL);
+  /* wilddog_assert(size <= COAP_MAX_PDU_SIZE, NULL); */
   /* Size must be large enough to fit the header. */
-  if (size < sizeof(coap_hdr_t) || size > COAP_MAX_PDU_SIZE)
+  if (size < sizeof(coap_hdr_t) || size > COAP_MAX_PDU_SIZE * 10)
     return NULL;
 
   pdu = wmalloc(sizeof(coap_pdu_t) + size);
